@@ -12,6 +12,7 @@ namespace DME
 		static Settings* GetSingleton();
 
 		bool unlockCamera;
+		bool allowToggleRun;
 
 		bool autoCloseMenus;
 		float autoCloseDistance;

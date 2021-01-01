@@ -30,12 +30,16 @@ namespace DME
 		RE::BSEventNotifyControl ProcessEvent_Hook(RE::InputEvent** a_event, RE::BSTEventSource<RE::InputEvent*>* a_source)
 		{
 			RE::UI* ui = RE::UI::GetSingleton();
+			RE::PlayerControls* pc = RE::PlayerControls::GetSingleton();
+			RE::ControlMap* controlMap = RE::ControlMap::GetSingleton();
 			RE::UserEvents* userEvents = RE::UserEvents::GetSingleton();
 
 			// SkyrimSouls compatibility
 			using func_t = bool(*)();
 			REL::Relocation<func_t> func(REL::ID{ 56476 });
 			bool isInMenuMode = func();
+
+			bool movementControlsEnabled = pc->movementHandler->IsInputEventHandlingEnabled() && controlMap->IsMovementControlsEnabled();
 
 			if (a_event && *a_event && !this->remapMode && !isInMenuMode && ui->IsMenuOpen(RE::DialogueMenu::MENU_NAME))
 			{
@@ -48,28 +52,34 @@ namespace DME
 						//Forward
 						if (idEvent->userEvent == userEvents->up && IsMappedToSameButton(idEvent->idCode, idEvent->device.get(), userEvents->forward))
 						{
-							idEvent->userEvent = userEvents->forward;
+							idEvent->userEvent = movementControlsEnabled ? userEvents->forward : "";
 						}
 						//Back
 						if (idEvent->userEvent == userEvents->down && IsMappedToSameButton(idEvent->idCode, idEvent->device.get(), userEvents->back))
 						{
-							idEvent->userEvent = userEvents->back;
+							idEvent->userEvent = movementControlsEnabled ? userEvents->back : "";
 						}
 						//Left
 						if (idEvent->userEvent == userEvents->left && IsMappedToSameButton(idEvent->idCode, idEvent->device.get(), userEvents->strafeLeft))
 						{
-							idEvent->userEvent = userEvents->strafeLeft;
+							idEvent->userEvent = movementControlsEnabled ? userEvents->strafeLeft : "";
 						}
 						//Right
 						if (idEvent->userEvent == userEvents->right && IsMappedToSameButton(idEvent->idCode, idEvent->device.get(), userEvents->strafeRight))
 						{
-							idEvent->userEvent = userEvents->strafeRight;
+							idEvent->userEvent = movementControlsEnabled ? userEvents->strafeRight : "";
+						}
+
+						//Toggle Walk/Run
+						if (Settings::GetSingleton()->allowToggleRun && IsMappedToSameButton(idEvent->idCode, idEvent->device.get(), userEvents->toggleRun))
+						{
+							idEvent->userEvent = movementControlsEnabled ? userEvents->toggleRun : "";
 						}
 
 						//Controllers
 						if (idEvent->userEvent == userEvents->leftStick)
 						{
-							idEvent->userEvent = userEvents->move;
+							idEvent->userEvent = movementControlsEnabled ? userEvents->move : "";
 						}
 					}
 				}

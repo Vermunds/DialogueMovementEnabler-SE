@@ -30,6 +30,9 @@ namespace DME
 		settings->unlockCamera = ini.GetBoolValue("GENERAL", "bUnlockCamera", true);
 		ini.SetBoolValue("GENERAL", "bUnlockCamera", settings->unlockCamera, "#  Unlocks camera rotation so you can look around in any direction.", true);
 
+		settings->allowToggleRun = ini.GetBoolValue("GENERAL", "bAllowToggleRun", true);
+		ini.SetBoolValue("GENERAL", "bAllowToggleRun", settings->allowToggleRun, "#  Allows the toggle walk/run control (Caps Lock by default).", true);
+
 		//Auto-close
 		settings->autoCloseMenus = ini.GetBoolValue("AUTOCLOSE", "bAutoCloseMenus", true);
 		settings->autoCloseDistance = static_cast<float>(ini.GetDoubleValue("AUTOCLOSE", "fAutoCloseDistance", 1350.0));
