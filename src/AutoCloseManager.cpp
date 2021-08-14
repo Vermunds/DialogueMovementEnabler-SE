@@ -18,7 +18,7 @@ namespace DME
 		float maxDistance = settings->autoCloseDistance;
 		float tolerance = settings->autoCloseTolerance;
 
-		if (data->target && settings->autoCloseMenus)
+		if (data && data->target && settings->autoCloseMenus)
 		{
 			float currentDistance = GetDistance(player->GetPosition(), player->GetHeight(), data->target->GetPosition());
 			bool tooFarOnOpen = (data->initialDistance > maxDistance) ? true : false;
