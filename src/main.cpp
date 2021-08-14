@@ -4,15 +4,6 @@
 
 constexpr auto MESSAGE_BOX_TYPE = 0x00001010L; // MB_OK | MB_ICONERROR | MB_SYSTEMMODAL
 
-void MessageHandler(SKSE::MessagingInterface::Message* a_msg)
-{
-	switch (a_msg->type) {
-	case SKSE::MessagingInterface::kDataLoaded:
-		SKSE::GetMessagingInterface()->Dispatch(0, nullptr, 0, nullptr);
-		break;
-	}
-}
-
 extern "C" {
 	bool SKSEPlugin_Query(const SKSE::QueryInterface* a_skse, SKSE::PluginInfo* a_info)
 	{
@@ -52,16 +43,6 @@ extern "C" {
 	bool SKSEPlugin_Load(SKSE::LoadInterface* a_skse)
 	{
 		SKSE::Init(a_skse);
-
-		auto messaging = SKSE::GetMessagingInterface();
-		if (messaging->RegisterListener("SKSE", MessageHandler)) {
-			SKSE::log::info("Messaging interface registration successful.");
-		}
-		else {
-			SKSE::log::critical("Messaging interface registration failed.");
-			SKSE::WinAPI::MessageBox(nullptr, "Messaging interface registration failed.", "Dialogue Movement Enabler - Error", MESSAGE_BOX_TYPE);
-			return false;
-		}
 
 		DME::LoadSettings();
 		SKSE::log::info("Settings loaded.");

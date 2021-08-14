@@ -4,7 +4,7 @@
 #define MAKE_STR_HELPER(x) #x
 #define MAKE_STR(x) MAKE_STR_HELPER(x)
 
-#define DME_VERSION_MAJOR 1
+#define DME_VERSION_MAJOR 2
 #define DME_VERSION_MINOR 0
 #define DME_VERSION_PATCH 0
 #define DME_VERSION_BETA 0
