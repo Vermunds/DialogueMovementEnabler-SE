@@ -5,7 +5,7 @@
 constexpr auto MESSAGE_BOX_TYPE = 0x00001010L; // MB_OK | MB_ICONERROR | MB_SYSTEMMODAL
 
 extern "C" {
-	bool SKSEPlugin_Query(const SKSE::QueryInterface* a_skse, SKSE::PluginInfo* a_info)
+	DLLEXPORT bool SKSEPlugin_Query(const SKSE::QueryInterface* a_skse, SKSE::PluginInfo* a_info)
 	{
 		assert(SKSE::log::log_directory().has_value());
 		auto path = SKSE::log::log_directory().value() / std::filesystem::path("DialogueMovementEnabler.log");
@@ -18,11 +18,11 @@ extern "C" {
 		spdlog::set_default_logger(std::move(log));
 		spdlog::set_pattern("%g(%#): [%^%l%$] %v", spdlog::pattern_time_type::local);
 
-		SKSE::log::info("Dialogue Movement Enabler v" + std::string(DME_VERSION_VERSTRING) + " - (" + std::string(__TIMESTAMP__) + ")");
+		SKSE::log::info("Dialogue Movement Enabler v" + std::string(Version::NAME) + " - (" + std::string(__TIMESTAMP__) + ")");
 
 		a_info->infoVersion = SKSE::PluginInfo::kVersion;
-		a_info->name = "Dialogue Movement Enabler";
-		a_info->version = DME_VERSION_MAJOR;
+		a_info->name = Version::PROJECT.data();
+		a_info->version = Version::MAJOR;
 
 		if (a_skse->IsEditor()) {
 			SKSE::log::critical("Loaded in editor, marking as incompatible!");
@@ -35,12 +35,10 @@ extern "C" {
 			return false;
 		}
 
-		//SKSE::AllocTrampoline(1 << 4, true);
-
 		return true;
 	}
 
-	bool SKSEPlugin_Load(SKSE::LoadInterface* a_skse)
+	DLLEXPORT bool SKSEPlugin_Load(SKSE::LoadInterface* a_skse)
 	{
 		SKSE::Init(a_skse);
 

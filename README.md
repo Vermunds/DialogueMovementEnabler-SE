@@ -1,4 +1,5 @@
 # Dialogue Movement Enabler
+To build the mod I recommend using my wrapper project found [here](https://github.com/Vermunds/SkyrimSE-Mods).
 
 ## Build Dependencies
 * [CommonLibSSE](https://github.com/SniffleMan/CommonLibSSE)

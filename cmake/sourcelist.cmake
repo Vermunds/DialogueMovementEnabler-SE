@@ -1,0 +1,11 @@
+set(SOURCES
+	include/AutoCloseManager.h
+	include/Hooks.h
+	include/PCH.h
+	include/Settings.h
+	include/version.h
+	src/AutoCloseManager.cpp
+	src/Hooks.cpp
+	src/Settings.cpp
+	src/main.cpp
+)
