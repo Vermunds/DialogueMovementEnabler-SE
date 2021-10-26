@@ -1,6 +1,6 @@
 #include "Hooks.h"
-#include "Settings.h"
 #include "AutoCloseManager.h"
+#include "Settings.h"
 
 namespace DME
 {
@@ -9,12 +9,11 @@ namespace DME
 	class MenuControlsEx : public RE::MenuControls
 	{
 	public:
-		using ProcessEvent_t = decltype(static_cast<RE::BSEventNotifyControl(RE::MenuControls::*)(RE::InputEvent* const*, RE::BSTEventSource<RE::InputEvent*>*)>(&RE::MenuControls::ProcessEvent));
+		using ProcessEvent_t = decltype(static_cast<RE::BSEventNotifyControl (RE::MenuControls::*)(RE::InputEvent* const*, RE::BSTEventSource<RE::InputEvent*>*)>(&RE::MenuControls::ProcessEvent));
 		inline static REL::Relocation<ProcessEvent_t> _ProcessEvent;
 
 		RE::BSEventNotifyControl ProcessEvent_Hook(RE::InputEvent** a_event, RE::BSTEventSource<RE::InputEvent*>* a_source)
 		{
-
 			RE::UI* ui = RE::UI::GetSingleton();
 			RE::PlayerControls* pc = RE::PlayerControls::GetSingleton();
 			RE::ControlMap* controlMap = RE::ControlMap::GetSingleton();
@@ -22,7 +21,7 @@ namespace DME
 			RE::BSInputDeviceManager* inputDeviceManager = RE::BSInputDeviceManager::GetSingleton();
 
 			// SkyrimSouls compatibility
-			using func_t = bool(*)();
+			using func_t = bool (*)();
 			REL::Relocation<func_t> func(REL::ID{ 56476 });
 			bool isInMenuMode = func();
 
@@ -145,7 +144,7 @@ namespace DME
 		{
 			switch (a_message.type.get())
 			{
-				case RE::UI_MESSAGE_TYPE::kShow:
+			case RE::UI_MESSAGE_TYPE::kShow:
 				{
 					RE::MenuTopicManager* topicManager = RE::MenuTopicManager::GetSingleton();
 
@@ -211,16 +210,16 @@ namespace DME
 		REL::Relocation<std::uintptr_t> vTable_dm(REL::ID{ 268589 });
 		DialogueMenuEx::_ProcessMessage = vTable_dm.write_vfunc(0x4, &DialogueMenuEx::ProcessMessage_Hook);
 		DialogueMenuEx::_AdvanceMovie = vTable_dm.write_vfunc(0x5, &DialogueMenuEx::AdvanceMovie_Hook);
-		
+
 		if (settings->unlockCamera)
 		{
-			std::uint8_t buf[] = { 0xE9, 0xBE, 0x00, 0x00, 0x00, 0x90 }; //jmp + nop
+			std::uint8_t buf[] = { 0xE9, 0xBE, 0x00, 0x00, 0x00, 0x90 };  //jmp + nop
 			REL::safe_write(REL::ID{ 41292 }.address() + 0x25, std::span<uint8_t>(buf));
 		}
 
 		if (settings->freeLook)
 		{
-			std::uint8_t buf[] = { 0xE9, 0x31, 0x01, 0x00, 0x00, 0x90 }; //jmp + nop
+			std::uint8_t buf[] = { 0xE9, 0x31, 0x01, 0x00, 0x00, 0x90 };  //jmp + nop
 			REL::safe_write(REL::ID{ 41259 }.address() + 0xB5, std::span<uint8_t>(buf));
 		}
 	}

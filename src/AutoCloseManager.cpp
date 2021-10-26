@@ -31,7 +31,7 @@ namespace DME
 			else if (tooFarOnOpen)
 			{
 				//Target was opened when it was too far
-				if (currentDistance > maxDistance && currentDistance > (data->minDistance + tolerance)) //Close only if the distance is increasing
+				if (currentDistance > maxDistance && currentDistance > (data->minDistance + tolerance))  //Close only if the distance is increasing
 				{
 					uiMessageQueue->AddMessage(RE::DialogueMenu::MENU_NAME, RE::UI_MESSAGE_TYPE::kHide, nullptr);
 					return;
@@ -73,7 +73,8 @@ namespace DME
 		//Get distance from feet and head, return the smaller
 		float distanceHead = static_cast<float>(std::pow(a_playerPos.x - a_targetPos.x, 2) + std::pow(a_playerPos.y - a_targetPos.y, 2) + std::pow((a_playerPos.z + a_playerHeight) - a_targetPos.z, 2));
 		float distanceFeet = static_cast<float>(std::pow(a_playerPos.x - a_targetPos.x, 2) + std::pow(a_playerPos.y - a_targetPos.y, 2) + std::pow(a_playerPos.z - a_targetPos.z, 2));
-		if (distanceHead < distanceFeet) {
+		if (distanceHead < distanceFeet)
+		{
 			return std::sqrt(distanceHead);
 		}
 		return std::sqrt(distanceFeet);
