@@ -4,10 +4,6 @@ namespace DME
 {
 	class Settings
 	{
-	private:
-		static Settings* singleton;
-		Settings();
-
 	public:
 		enum ControlType
 		{
@@ -16,11 +12,11 @@ namespace DME
 
 			kTotal
 		};
+		
 		static Settings* GetSingleton();
 
 		// General
 		bool unlockCamera;
-		bool freeLook;
 
 		// Controls
 		bool allowMovement[kTotal];
@@ -40,6 +36,12 @@ namespace DME
 		bool autoCloseMenus;
 		float autoCloseDistance;
 		float autoCloseTolerance;
+
+	private:
+		Settings(){};
+		~Settings(){};
+		Settings(const Settings&) = delete;
+		Settings& operator=(const Settings&) = delete;
 	};
 
 	void LoadSettings();

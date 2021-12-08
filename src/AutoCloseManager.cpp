@@ -5,8 +5,6 @@
 
 namespace DME
 {
-	AutoCloseManager* AutoCloseManager::_singleton = nullptr;
-
 	void AutoCloseManager::CheckAutoClose()
 	{
 		Settings* settings = Settings::GetSingleton();
@@ -60,12 +58,8 @@ namespace DME
 
 	AutoCloseManager* AutoCloseManager::GetSingleton()
 	{
-		if (_singleton)
-		{
-			return _singleton;
-		}
-		_singleton = new AutoCloseManager();
-		return _singleton;
+		static AutoCloseManager singleton;
+		return &singleton;
 	}
 
 	float AutoCloseManager::GetDistance(RE::NiPoint3 a_playerPos, float a_playerHeight, RE::NiPoint3 a_targetPos)

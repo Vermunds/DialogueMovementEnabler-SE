@@ -22,7 +22,7 @@ namespace DME
 
 			// SkyrimSouls compatibility
 			using func_t = bool (*)();
-			REL::Relocation<func_t> func(REL::ID{ 56476 });
+			REL::Relocation<func_t> func(REL::ID{ 56833 });
 			bool isInMenuMode = func();
 
 			bool movementControlsEnabled = pc->movementHandler->IsInputEventHandlingEnabled() && controlMap->IsMovementControlsEnabled();
@@ -178,13 +178,6 @@ namespace DME
 							}
 						}
 					}
-
-					if (Settings::GetSingleton()->freeLook)
-					{
-						this->menuFlags &= static_cast<Flag>(~std::underlying_type_t<Flag>(Flag::kUsesCursor));
-						this->menuFlags &= static_cast<Flag>(~std::underlying_type_t<Flag>(Flag::kUpdateUsesCursor));
-						this->menuFlags &= static_cast<Flag>(~std::underlying_type_t<Flag>(Flag::kDontHideCursorWhenTopmost));
-					}
 				}
 				break;
 			}
@@ -203,24 +196,18 @@ namespace DME
 	{
 		Settings* settings = Settings::GetSingleton();
 
-		REL::Relocation<std::uintptr_t> vTable_mc(REL::ID{ 269528 });
+		REL::Relocation<std::uintptr_t> vTable_mc(REL::ID{ 215773 });
 		MenuControlsEx::_ProcessEvent = vTable_mc.write_vfunc(0x1, &MenuControlsEx::ProcessEvent_Hook);
 
 		//Hook ProcessMessage
-		REL::Relocation<std::uintptr_t> vTable_dm(REL::ID{ 268589 });
+		REL::Relocation<std::uintptr_t> vTable_dm(REL::ID{ 215255 });
 		DialogueMenuEx::_ProcessMessage = vTable_dm.write_vfunc(0x4, &DialogueMenuEx::ProcessMessage_Hook);
 		DialogueMenuEx::_AdvanceMovie = vTable_dm.write_vfunc(0x5, &DialogueMenuEx::AdvanceMovie_Hook);
 
 		if (settings->unlockCamera)
 		{
-			std::uint8_t buf[] = { 0xE9, 0xBE, 0x00, 0x00, 0x00, 0x90 };  //jmp + nop
-			REL::safe_write(REL::ID{ 41292 }.address() + 0x25, std::span<uint8_t>(buf));
-		}
-
-		if (settings->freeLook)
-		{
-			std::uint8_t buf[] = { 0xE9, 0x31, 0x01, 0x00, 0x00, 0x90 };  //jmp + nop
-			REL::safe_write(REL::ID{ 41259 }.address() + 0xB5, std::span<uint8_t>(buf));
+			std::uint8_t buf[] = { 0xE9, 0xB1, 0x00, 0x00, 0x00, 0x90 };  //jmp + nop
+			REL::safe_write(REL::ID{ 42338 }.address() + 0x5AF, std::span<uint8_t>(buf));
 		}
 	}
 }

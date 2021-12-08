@@ -13,6 +13,11 @@ namespace DME
 		static AutoCloseManager* GetSingleton();
 
 	private:
+		AutoCloseManager(){};
+		~AutoCloseManager(){};
+		AutoCloseManager(const AutoCloseManager&) = delete;
+		AutoCloseManager& operator=(const AutoCloseManager&) = delete;
+		
 		struct AutoCloseData
 		{
 			RE::TESObjectREFR* target = nullptr;
@@ -20,8 +25,6 @@ namespace DME
 			float minDistance = 0.0f;
 		};
 		AutoCloseData* _data;
-
-		static AutoCloseManager* _singleton;
 
 		float GetDistance(RE::NiPoint3 a_playerPos, float a_playerHeight, RE::NiPoint3 a_refPos);
 	};

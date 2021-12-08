@@ -4,18 +4,10 @@
 
 namespace DME
 {
-	Settings* Settings::singleton = nullptr;
-
-	Settings::Settings() {}
-
 	Settings* Settings::GetSingleton()
 	{
-		if (singleton)
-		{
-			return singleton;
-		}
-		singleton = new Settings();
-		return singleton;
+		static Settings singleton;
+		return &singleton;
 	}
 
 	void LoadSettings()
@@ -32,22 +24,19 @@ namespace DME
 		settings->unlockCamera = ini.GetBoolValue("GENERAL", "bUnlockCamera", true);
 		ini.SetBoolValue("GENERAL", "bUnlockCamera", settings->unlockCamera, "#  Unlocks camera rotation so you can look around in any direction.", true);
 
-		settings->freeLook = ini.GetBoolValue("GENERAL", "bFreeLook", true);
-		ini.SetBoolValue("GENERAL", "bFreeLook", settings->freeLook, "#  Disables cursor and allows you to look around with the mouse.", true);
-
 		// Controls - kb/m
 		settings->allowMovement[ControlType::kKeyboardMouse] = ini.GetBoolValue("CONTROLS_KEYBOARD", "bAllowMovement", true);
-		settings->allowRun[ControlType::kKeyboardMouse] = ini.GetBoolValue("CONTROLS_KEYBOARD", "bAllowRun", true);
-		settings->allowToggleRun[ControlType::kKeyboardMouse] = ini.GetBoolValue("CONTROLS_KEYBOARD", "bAllowToggleRun", true);
-		settings->allowJump[ControlType::kKeyboardMouse] = ini.GetBoolValue("CONTROLS_KEYBOARD", "bAllowJump", true);
-		settings->allowSprint[ControlType::kKeyboardMouse] = ini.GetBoolValue("CONTROLS_KEYBOARD", "bAllowSprint", true);
-		settings->allowTogglePOV[ControlType::kKeyboardMouse] = ini.GetBoolValue("CONTROLS_KEYBOARD", "bAllowTogglePOV", true);
-		settings->allowSneak[ControlType::kKeyboardMouse] = ini.GetBoolValue("CONTROLS_KEYBOARD", "bAllowSneak", true);
-		settings->allowReadyWeapon[ControlType::kKeyboardMouse] = ini.GetBoolValue("CONTROLS_KEYBOARD", "bAllowReadyWeapon", true);
+		settings->allowRun[ControlType::kKeyboardMouse] = ini.GetBoolValue("CONTROLS_KEYBOARD", "bAllowRun", false);
+		settings->allowToggleRun[ControlType::kKeyboardMouse] = ini.GetBoolValue("CONTROLS_KEYBOARD", "bAllowToggleRun", false);
+		settings->allowJump[ControlType::kKeyboardMouse] = ini.GetBoolValue("CONTROLS_KEYBOARD", "bAllowJump", false);
+		settings->allowSprint[ControlType::kKeyboardMouse] = ini.GetBoolValue("CONTROLS_KEYBOARD", "bAllowSprint", false);
+		settings->allowTogglePOV[ControlType::kKeyboardMouse] = ini.GetBoolValue("CONTROLS_KEYBOARD", "bAllowTogglePOV", false);
+		settings->allowSneak[ControlType::kKeyboardMouse] = ini.GetBoolValue("CONTROLS_KEYBOARD", "bAllowSneak", false);
+		settings->allowReadyWeapon[ControlType::kKeyboardMouse] = ini.GetBoolValue("CONTROLS_KEYBOARD", "bAllowReadyWeapon", false);
 		settings->allowLeftAttack[ControlType::kKeyboardMouse] = ini.GetBoolValue("CONTROLS_KEYBOARD", "bAllowLeftAttack", false);
 		settings->allowRightAttack[ControlType::kKeyboardMouse] = ini.GetBoolValue("CONTROLS_KEYBOARD", "bAllowRightAttack", false);
-		settings->allowHotkeys[ControlType::kKeyboardMouse] = ini.GetBoolValue("CONTROLS_KEYBOARD", "bAllowHotkeys", true);
-		settings->allowShout[ControlType::kKeyboardMouse] = ini.GetBoolValue("CONTROLS_KEYBOARD", "bAllowShout", true);
+		settings->allowHotkeys[ControlType::kKeyboardMouse] = ini.GetBoolValue("CONTROLS_KEYBOARD", "bAllowHotkeys", false);
+		settings->allowShout[ControlType::kKeyboardMouse] = ini.GetBoolValue("CONTROLS_KEYBOARD", "bAllowShout", false);
 
 		ini.SetBoolValue("CONTROLS_KEYBOARD", "bAllowMovement", settings->allowMovement[ControlType::kKeyboardMouse], nullptr, true);
 		ini.SetBoolValue("CONTROLS_KEYBOARD", "bAllowRun", settings->allowRun[ControlType::kKeyboardMouse], nullptr, true);
@@ -64,17 +53,17 @@ namespace DME
 
 		// Controls - controller
 		settings->allowMovement[ControlType::kController] = ini.GetBoolValue("CONTROLS_CONTROLLER", "bAllowMovement", true);
-		settings->allowRun[ControlType::kController] = ini.GetBoolValue("CONTROLS_CONTROLLER", "bAllowRun", true);
-		settings->allowToggleRun[ControlType::kController] = ini.GetBoolValue("CONTROLS_CONTROLLER", "bAllowToggleRun", true);
-		settings->allowJump[ControlType::kController] = ini.GetBoolValue("CONTROLS_CONTROLLER", "bAllowJump", true);
-		settings->allowSprint[ControlType::kController] = ini.GetBoolValue("CONTROLS_CONTROLLER", "bAllowSprint", true);
-		settings->allowTogglePOV[ControlType::kController] = ini.GetBoolValue("CONTROLS_CONTROLLER", "bAllowTogglePOV", true);
-		settings->allowSneak[ControlType::kController] = ini.GetBoolValue("CONTROLS_CONTROLLER", "bAllowSneak", true);
-		settings->allowReadyWeapon[ControlType::kController] = ini.GetBoolValue("CONTROLS_CONTROLLER", "bAllowReadyWeapon", true);
-		settings->allowLeftAttack[ControlType::kController] = ini.GetBoolValue("CONTROLS_CONTROLLER", "bAllowLeftAttack", true);
-		settings->allowRightAttack[ControlType::kController] = ini.GetBoolValue("CONTROLS_CONTROLLER", "bAllowRightAttack", true);
-		settings->allowHotkeys[ControlType::kController] = ini.GetBoolValue("CONTROLS_CONTROLLER", "bAllowHotkeys", true);
-		settings->allowShout[ControlType::kController] = ini.GetBoolValue("CONTROLS_CONTROLLER", "bAllowShout", true);
+		settings->allowRun[ControlType::kController] = ini.GetBoolValue("CONTROLS_CONTROLLER", "bAllowRun", false);
+		settings->allowToggleRun[ControlType::kController] = ini.GetBoolValue("CONTROLS_CONTROLLER", "bAllowToggleRun", false);
+		settings->allowJump[ControlType::kController] = ini.GetBoolValue("CONTROLS_CONTROLLER", "bAllowJump", false);
+		settings->allowSprint[ControlType::kController] = ini.GetBoolValue("CONTROLS_CONTROLLER", "bAllowSprint", false);
+		settings->allowTogglePOV[ControlType::kController] = ini.GetBoolValue("CONTROLS_CONTROLLER", "bAllowTogglePOV", false);
+		settings->allowSneak[ControlType::kController] = ini.GetBoolValue("CONTROLS_CONTROLLER", "bAllowSneak", false);
+		settings->allowReadyWeapon[ControlType::kController] = ini.GetBoolValue("CONTROLS_CONTROLLER", "bAllowReadyWeapon", false);
+		settings->allowLeftAttack[ControlType::kController] = ini.GetBoolValue("CONTROLS_CONTROLLER", "bAllowLeftAttack", false);
+		settings->allowRightAttack[ControlType::kController] = ini.GetBoolValue("CONTROLS_CONTROLLER", "bAllowRightAttack", false);
+		settings->allowHotkeys[ControlType::kController] = ini.GetBoolValue("CONTROLS_CONTROLLER", "bAllowHotkeys", false);
+		settings->allowShout[ControlType::kController] = ini.GetBoolValue("CONTROLS_CONTROLLER", "bAllowShout", false);
 
 		ini.SetBoolValue("CONTROLS_CONTROLLER", "bAllowMovement", settings->allowMovement[ControlType::kController], nullptr, true);
 		ini.SetBoolValue("CONTROLS_CONTROLLER", "bAllowRun", settings->allowRun[ControlType::kController], nullptr, true);
