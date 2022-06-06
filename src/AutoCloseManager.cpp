@@ -11,15 +11,13 @@ namespace DME
 		RE::PlayerCharacter* player = RE::PlayerCharacter::GetSingleton();
 		RE::UIMessageQueue* uiMessageQueue = RE::UIMessageQueue::GetSingleton();
 
-		AutoCloseData* data = this->_data;
-
 		float maxDistance = settings->autoCloseDistance;
 		float tolerance = settings->autoCloseTolerance;
 
-		if (data && data->target && settings->autoCloseMenus)
+		if (_data.target && settings->autoCloseMenus)
 		{
-			float currentDistance = GetDistance(player->GetPosition(), player->GetHeight(), data->target->GetPosition());
-			bool tooFarOnOpen = (data->initialDistance > maxDistance) ? true : false;
+			float currentDistance = GetDistance(player->GetPosition(), player->GetHeight(), _data.target->GetPosition());
+			bool tooFarOnOpen = (_data.initialDistance > maxDistance) ? true : false;
 
 			if (!tooFarOnOpen && currentDistance > maxDistance)
 			{
@@ -29,31 +27,25 @@ namespace DME
 			else if (tooFarOnOpen)
 			{
 				//Target was opened when it was too far
-				if (currentDistance > maxDistance && currentDistance > (data->minDistance + tolerance))  //Close only if the distance is increasing
+				if (currentDistance > maxDistance && currentDistance > (_data.minDistance + tolerance))  //Close only if the distance is increasing
 				{
 					uiMessageQueue->AddMessage(RE::DialogueMenu::MENU_NAME, RE::UI_MESSAGE_TYPE::kHide, nullptr);
 					return;
 				}
 			}
 
-			data->minDistance = (currentDistance < data->minDistance) ? currentDistance : data->minDistance;
+			_data.minDistance = (currentDistance < _data.minDistance) ? currentDistance : _data.minDistance;
 		}
 	}
 
 	void AutoCloseManager::InitAutoClose(RE::TESObjectREFR* a_ref)
 	{
 		RE::PlayerCharacter* player = RE::PlayerCharacter::GetSingleton();
+		_data = AutoCloseData{};
 
-		if (!this->_data)
-		{
-			this->_data = new AutoCloseData();
-		}
-
-		AutoCloseData* data = this->_data;
-
-		data->target = a_ref;
-		data->initialDistance = a_ref ? GetDistance(player->GetPosition(), player->GetHeight(), a_ref->GetPosition()) : 0.0f;
-		data->minDistance = data->initialDistance;
+		_data.target = a_ref;
+		_data.initialDistance = a_ref ? GetDistance(player->GetPosition(), player->GetHeight(), a_ref->GetPosition()) : 0.0f;
+		_data.minDistance = _data.initialDistance;
 	}
 
 	AutoCloseManager* AutoCloseManager::GetSingleton()

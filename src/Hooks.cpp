@@ -158,26 +158,31 @@ namespace DME
 					{
 						target = topicManager->lastSpeaker.get().get();
 					}
-
-					if (target->formType == RE::FormType::ActorCharacter)
+					else
 					{
-						RE::PlayerCharacter* player = RE::PlayerCharacter::GetSingleton();
+						break;
+					}
 
-						if (player->GetParentCell()->IsInteriorCell() && target->GetParentCell()->IsInteriorCell())
+					RE::PlayerCharacter* player = RE::PlayerCharacter::GetSingleton();
+
+					if (player->GetParentCell()->IsInteriorCell() && target->GetParentCell()->IsInteriorCell())
+					{
+						if (player->GetParentCell() == target->GetParentCell())
 						{
-							if (player->GetParentCell() == target->GetParentCell())
-							{
-								AutoCloseManager::GetSingleton()->InitAutoClose(target);
-							}
-						}
-						else if (player->GetParentCell()->IsExteriorCell() && target->GetParentCell()->IsExteriorCell())
-						{
-							if (player->GetWorldspace() == target->GetWorldspace())
-							{
-								AutoCloseManager::GetSingleton()->InitAutoClose(target);
-							}
+							AutoCloseManager::GetSingleton()->InitAutoClose(target);
 						}
 					}
+					else if (player->GetParentCell()->IsExteriorCell() && target->GetParentCell()->IsExteriorCell())
+					{
+						if (player->GetWorldspace() == target->GetWorldspace())
+						{
+							AutoCloseManager::GetSingleton()->InitAutoClose(target);
+						}
+					}
+					else
+					{
+						AutoCloseManager::GetSingleton()->InitAutoClose(nullptr);
+					}					
 				}
 				break;
 			}

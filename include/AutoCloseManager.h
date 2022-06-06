@@ -24,7 +24,7 @@ namespace DME
 			float initialDistance = 0.0f;
 			float minDistance = 0.0f;
 		};
-		AutoCloseData* _data;
+		AutoCloseData _data;
 
 		float GetDistance(RE::NiPoint3 a_playerPos, float a_playerHeight, RE::NiPoint3 a_refPos);
 	};
