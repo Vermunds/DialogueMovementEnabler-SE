@@ -4,7 +4,7 @@ cmake_minimum_required(VERSION 3.21)
 
 project(
 	DialogueMovementEnabler
-	VERSION 2.1.0
+	VERSION 2.2.0
 	LANGUAGES CXX
 )
 
