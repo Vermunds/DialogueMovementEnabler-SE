@@ -201,11 +201,11 @@ namespace DME
 	{
 		Settings* settings = Settings::GetSingleton();
 
-		REL::Relocation<std::uintptr_t> vTable_mc(REL::ID{ 215773 });
+		REL::Relocation<std::uintptr_t> vTable_mc(RE::VTABLE_MenuControls[0]);
 		MenuControlsEx::_ProcessEvent = vTable_mc.write_vfunc(0x1, &MenuControlsEx::ProcessEvent_Hook);
 
 		//Hook ProcessMessage
-		REL::Relocation<std::uintptr_t> vTable_dm(REL::ID{ 215255 });
+		REL::Relocation<std::uintptr_t> vTable_dm(RE::VTABLE_DialogueMenu[0]);
 		DialogueMenuEx::_ProcessMessage = vTable_dm.write_vfunc(0x4, &DialogueMenuEx::ProcessMessage_Hook);
 		DialogueMenuEx::_AdvanceMovie = vTable_dm.write_vfunc(0x5, &DialogueMenuEx::AdvanceMovie_Hook);
 
