@@ -4,19 +4,51 @@
 
 namespace DME
 {
-	constexpr RE::UserEvents::INPUT_CONTEXT_ID GAMEPLAY_CONTEXT = RE::UserEvents::INPUT_CONTEXT_ID::kGameplay;
-
 	class MenuControlsEx : public RE::MenuControls
 	{
 	public:
 		using ProcessEvent_t = decltype(static_cast<RE::BSEventNotifyControl (RE::MenuControls::*)(RE::InputEvent* const*, RE::BSTEventSource<RE::InputEvent*>*)>(&RE::MenuControls::ProcessEvent));
 		inline static REL::Relocation<ProcessEvent_t> _ProcessEvent;
 
+		bool IsMappedToSameButton(std::uint32_t a_keyMask, RE::INPUT_DEVICE a_deviceType, RE::BSFixedString a_controlName, RE::UserEvents::INPUT_CONTEXT_ID a_context = RE::UserEvents::INPUT_CONTEXT_ID::kGameplay)
+		{
+			if (REL::Module::get().version() >= SKSE::RUNTIME_SSE_1_6_1130)
+			{
+				RE::ControlMap_640* controlMap = RE::ControlMap_640::GetSingleton();
+
+				if (a_deviceType == RE::INPUT_DEVICE::kKeyboard)
+				{
+					std::uint32_t keyMask = controlMap->GetMappedKey(a_controlName, RE::INPUT_DEVICE::kKeyboard, static_cast<RE::UserEvents::INPUT_CONTEXT_ID_640>(a_context));
+					return a_keyMask == keyMask;
+				}
+				else if (a_deviceType == RE::INPUT_DEVICE::kMouse)
+				{
+					std::uint32_t keyMask = controlMap->GetMappedKey(a_controlName, RE::INPUT_DEVICE::kMouse, static_cast<RE::UserEvents::INPUT_CONTEXT_ID_640>(a_context));
+					return a_keyMask == keyMask;
+				}
+			}
+			else
+			{
+				RE::ControlMap* controlMap = RE::ControlMap::GetSingleton();
+
+				if (a_deviceType == RE::INPUT_DEVICE::kKeyboard)
+				{
+					std::uint32_t keyMask = controlMap->GetMappedKey(a_controlName, RE::INPUT_DEVICE::kKeyboard, a_context);
+					return a_keyMask == keyMask;
+				}
+				else if (a_deviceType == RE::INPUT_DEVICE::kMouse)
+				{
+					std::uint32_t keyMask = controlMap->GetMappedKey(a_controlName, RE::INPUT_DEVICE::kMouse, a_context);
+					return a_keyMask == keyMask;
+				}
+			}
+			return false;
+		}
+
 		RE::BSEventNotifyControl ProcessEvent_Hook(RE::InputEvent** a_event, RE::BSTEventSource<RE::InputEvent*>* a_source)
 		{
 			RE::UI* ui = RE::UI::GetSingleton();
 			RE::PlayerControls* pc = RE::PlayerControls::GetSingleton();
-			RE::ControlMap* controlMap = RE::ControlMap::GetSingleton();
 			RE::UserEvents* userEvents = RE::UserEvents::GetSingleton();
 			RE::BSInputDeviceManager* inputDeviceManager = RE::BSInputDeviceManager::GetSingleton();
 
@@ -25,7 +57,18 @@ namespace DME
 			REL::Relocation<func_t> func(REL::ID{ 56833 });
 			bool isInMenuMode = func();
 
-			bool movementControlsEnabled = pc->movementHandler->IsInputEventHandlingEnabled() && controlMap->IsMovementControlsEnabled();
+			bool movementControlsEnabled;
+
+			if (REL::Module::get().version() >= SKSE::RUNTIME_SSE_1_6_1130)
+			{
+				RE::ControlMap* controlMap = RE::ControlMap::GetSingleton();
+				movementControlsEnabled = pc->movementHandler->IsInputEventHandlingEnabled() && controlMap->IsMovementControlsEnabled();
+			}
+			else
+			{
+				RE::ControlMap_640* controlMap = RE::ControlMap_640::GetSingleton();
+				movementControlsEnabled = pc->movementHandler->IsInputEventHandlingEnabled() && controlMap->IsMovementControlsEnabled();
+			}
 
 			if (a_event && *a_event && !this->remapMode && !isInMenuMode && ui->IsMenuOpen(RE::DialogueMenu::MENU_NAME))
 			{
@@ -42,71 +85,71 @@ namespace DME
 						if (settings->allowMovement[controlType])
 						{
 							// WASD
-							idEvent->userEvent = controlMap->GetMappedKey(userEvents->forward, idEvent->device.get(), GAMEPLAY_CONTEXT) == idEvent->idCode ? userEvents->forward : idEvent->userEvent;
-							idEvent->userEvent = controlMap->GetMappedKey(userEvents->back, idEvent->device.get(), GAMEPLAY_CONTEXT) == idEvent->idCode ? userEvents->back : idEvent->userEvent;
-							idEvent->userEvent = controlMap->GetMappedKey(userEvents->strafeLeft, idEvent->device.get(), GAMEPLAY_CONTEXT) == idEvent->idCode ? userEvents->strafeLeft : idEvent->userEvent;
-							idEvent->userEvent = controlMap->GetMappedKey(userEvents->strafeRight, idEvent->device.get(), GAMEPLAY_CONTEXT) == idEvent->idCode ? userEvents->strafeRight : idEvent->userEvent;
+							idEvent->userEvent = IsMappedToSameButton(idEvent->idCode, idEvent->device.get(), userEvents->forward) ? userEvents->forward : idEvent->userEvent;
+							idEvent->userEvent = IsMappedToSameButton(idEvent->idCode, idEvent->device.get(), userEvents->back) ? userEvents->back : idEvent->userEvent;
+							idEvent->userEvent = IsMappedToSameButton(idEvent->idCode, idEvent->device.get(), userEvents->strafeLeft) ? userEvents->strafeLeft : idEvent->userEvent;
+							idEvent->userEvent = IsMappedToSameButton(idEvent->idCode, idEvent->device.get(), userEvents->strafeRight) ? userEvents->strafeRight : idEvent->userEvent;
 
 							// Controllers
 							idEvent->userEvent = idEvent->userEvent == userEvents->leftStick ? userEvents->move : idEvent->userEvent;
 						}
 
 						//Run
-						if (settings->allowRun[controlType] && controlMap->GetMappedKey(userEvents->run, idEvent->device.get(), GAMEPLAY_CONTEXT) == idEvent->idCode)
+						if (settings->allowRun[controlType] && IsMappedToSameButton(idEvent->idCode, idEvent->device.get(), userEvents->run))
 						{
 							idEvent->userEvent = movementControlsEnabled ? userEvents->run : "";
 						}
 
 						//Toggle Walk/Run
-						if (settings->allowToggleRun[controlType] && controlMap->GetMappedKey(userEvents->toggleRun, idEvent->device.get(), GAMEPLAY_CONTEXT) == idEvent->idCode)
+						if (settings->allowToggleRun[controlType] && IsMappedToSameButton(idEvent->idCode, idEvent->device.get(), userEvents->toggleRun))
 						{
 							idEvent->userEvent = movementControlsEnabled ? userEvents->toggleRun : "";
 						}
 
 						//Jump
-						if (settings->allowJump[controlType] && controlMap->GetMappedKey(userEvents->jump, idEvent->device.get(), GAMEPLAY_CONTEXT) == idEvent->idCode)
+						if (settings->allowJump[controlType] && IsMappedToSameButton(idEvent->idCode, idEvent->device.get(), userEvents->jump))
 						{
 							idEvent->userEvent = movementControlsEnabled ? userEvents->jump : "";
 						}
 
 						//Sprint
-						if (settings->allowSprint[controlType] && controlMap->GetMappedKey(userEvents->sprint, idEvent->device.get(), GAMEPLAY_CONTEXT) == idEvent->idCode)
+						if (settings->allowSprint[controlType] && IsMappedToSameButton(idEvent->idCode, idEvent->device.get(), userEvents->sprint))
 						{
 							idEvent->userEvent = movementControlsEnabled ? userEvents->sprint : "";
 						}
 
 						//Toggle POV
-						if (settings->allowTogglePOV[controlType] && controlMap->GetMappedKey(userEvents->togglePOV, idEvent->device.get(), GAMEPLAY_CONTEXT) == idEvent->idCode)
+						if (settings->allowTogglePOV[controlType] && IsMappedToSameButton(idEvent->idCode, idEvent->device.get(), userEvents->togglePOV))
 						{
 							idEvent->userEvent = movementControlsEnabled ? userEvents->togglePOV : "";
 						}
 
 						//Sneak
-						if (settings->allowSneak[controlType] && controlMap->GetMappedKey(userEvents->sneak, idEvent->device.get(), GAMEPLAY_CONTEXT) == idEvent->idCode)
+						if (settings->allowSneak[controlType] && IsMappedToSameButton(idEvent->idCode, idEvent->device.get(), userEvents->sneak))
 						{
 							idEvent->userEvent = movementControlsEnabled ? userEvents->sneak : "";
 						}
 
 						//Ready weapon
-						if (settings->allowReadyWeapon[controlType] && controlMap->GetMappedKey(userEvents->readyWeapon, idEvent->device.get(), GAMEPLAY_CONTEXT) == idEvent->idCode)
+						if (settings->allowReadyWeapon[controlType] && IsMappedToSameButton(idEvent->idCode, idEvent->device.get(), userEvents->readyWeapon))
 						{
 							idEvent->userEvent = movementControlsEnabled ? userEvents->readyWeapon : "";
 						}
 
 						//Left attack
-						if (settings->allowLeftAttack[controlType] && controlMap->GetMappedKey(userEvents->leftAttack, idEvent->device.get(), GAMEPLAY_CONTEXT) == idEvent->idCode)
+						if (settings->allowLeftAttack[controlType] && IsMappedToSameButton(idEvent->idCode, idEvent->device.get(), userEvents->leftAttack))
 						{
 							idEvent->userEvent = movementControlsEnabled ? userEvents->leftAttack : "";
 						}
 
 						//Right attack
-						if (settings->allowRightAttack[controlType] && controlMap->GetMappedKey(userEvents->rightAttack, idEvent->device.get(), GAMEPLAY_CONTEXT) == idEvent->idCode)
+						if (settings->allowRightAttack[controlType] && IsMappedToSameButton(idEvent->idCode, idEvent->device.get(), userEvents->rightAttack))
 						{
 							idEvent->userEvent = movementControlsEnabled ? userEvents->rightAttack : "";
 						}
 
 						//Shout
-						if (settings->allowShout[controlType] && controlMap->GetMappedKey(userEvents->shout, idEvent->device.get(), GAMEPLAY_CONTEXT) == idEvent->idCode)
+						if (settings->allowShout[controlType] && IsMappedToSameButton(idEvent->idCode, idEvent->device.get(), userEvents->shout))
 						{
 							idEvent->userEvent = movementControlsEnabled ? userEvents->shout : "";
 						}
@@ -114,14 +157,14 @@ namespace DME
 						//Hotkeys
 						if (settings->allowHotkeys[controlType])
 						{
-							idEvent->userEvent = controlMap->GetMappedKey(userEvents->hotkey1, idEvent->device.get(), GAMEPLAY_CONTEXT) == idEvent->idCode ? userEvents->hotkey1 : idEvent->userEvent;
-							idEvent->userEvent = controlMap->GetMappedKey(userEvents->hotkey2, idEvent->device.get(), GAMEPLAY_CONTEXT) == idEvent->idCode ? userEvents->hotkey2 : idEvent->userEvent;
-							idEvent->userEvent = controlMap->GetMappedKey(userEvents->hotkey3, idEvent->device.get(), GAMEPLAY_CONTEXT) == idEvent->idCode ? userEvents->hotkey3 : idEvent->userEvent;
-							idEvent->userEvent = controlMap->GetMappedKey(userEvents->hotkey4, idEvent->device.get(), GAMEPLAY_CONTEXT) == idEvent->idCode ? userEvents->hotkey4 : idEvent->userEvent;
-							idEvent->userEvent = controlMap->GetMappedKey(userEvents->hotkey5, idEvent->device.get(), GAMEPLAY_CONTEXT) == idEvent->idCode ? userEvents->hotkey5 : idEvent->userEvent;
-							idEvent->userEvent = controlMap->GetMappedKey(userEvents->hotkey6, idEvent->device.get(), GAMEPLAY_CONTEXT) == idEvent->idCode ? userEvents->hotkey6 : idEvent->userEvent;
-							idEvent->userEvent = controlMap->GetMappedKey(userEvents->hotkey7, idEvent->device.get(), GAMEPLAY_CONTEXT) == idEvent->idCode ? userEvents->hotkey7 : idEvent->userEvent;
-							idEvent->userEvent = controlMap->GetMappedKey(userEvents->hotkey8, idEvent->device.get(), GAMEPLAY_CONTEXT) == idEvent->idCode ? userEvents->hotkey8 : idEvent->userEvent;
+							idEvent->userEvent = IsMappedToSameButton(idEvent->idCode, idEvent->device.get(), userEvents->hotkey1) ? userEvents->hotkey1 : idEvent->userEvent;
+							idEvent->userEvent = IsMappedToSameButton(idEvent->idCode, idEvent->device.get(), userEvents->hotkey2) ? userEvents->hotkey2 : idEvent->userEvent;
+							idEvent->userEvent = IsMappedToSameButton(idEvent->idCode, idEvent->device.get(), userEvents->hotkey3) ? userEvents->hotkey3 : idEvent->userEvent;
+							idEvent->userEvent = IsMappedToSameButton(idEvent->idCode, idEvent->device.get(), userEvents->hotkey4) ? userEvents->hotkey4 : idEvent->userEvent;
+							idEvent->userEvent = IsMappedToSameButton(idEvent->idCode, idEvent->device.get(), userEvents->hotkey5) ? userEvents->hotkey5 : idEvent->userEvent;
+							idEvent->userEvent = IsMappedToSameButton(idEvent->idCode, idEvent->device.get(), userEvents->hotkey6) ? userEvents->hotkey6 : idEvent->userEvent;
+							idEvent->userEvent = IsMappedToSameButton(idEvent->idCode, idEvent->device.get(), userEvents->hotkey7) ? userEvents->hotkey7 : idEvent->userEvent;
+							idEvent->userEvent = IsMappedToSameButton(idEvent->idCode, idEvent->device.get(), userEvents->hotkey8) ? userEvents->hotkey8 : idEvent->userEvent;
 						}
 					}
 				}
@@ -182,7 +225,7 @@ namespace DME
 					else
 					{
 						AutoCloseManager::GetSingleton()->InitAutoClose(nullptr);
-					}					
+					}
 				}
 				break;
 			}
