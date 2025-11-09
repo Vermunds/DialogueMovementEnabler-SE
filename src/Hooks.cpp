@@ -12,36 +12,19 @@ namespace DME
 
 		bool IsMappedToSameButton(std::uint32_t a_keyMask, RE::INPUT_DEVICE a_deviceType, RE::BSFixedString a_controlName, RE::UserEvents::INPUT_CONTEXT_ID a_context = RE::UserEvents::INPUT_CONTEXT_ID::kGameplay)
 		{
-			if (REL::Module::get().version() >= SKSE::RUNTIME_SSE_1_6_1130)
-			{
-				RE::ControlMap_640* controlMap = RE::ControlMap_640::GetSingleton();
+			RE::ControlMap* controlMap = RE::ControlMap::GetSingleton();
 
-				if (a_deviceType == RE::INPUT_DEVICE::kKeyboard)
-				{
-					std::uint32_t keyMask = controlMap->GetMappedKey(a_controlName, RE::INPUT_DEVICE::kKeyboard, static_cast<RE::UserEvents::INPUT_CONTEXT_ID_640>(a_context));
-					return a_keyMask == keyMask;
-				}
-				else if (a_deviceType == RE::INPUT_DEVICE::kMouse)
-				{
-					std::uint32_t keyMask = controlMap->GetMappedKey(a_controlName, RE::INPUT_DEVICE::kMouse, static_cast<RE::UserEvents::INPUT_CONTEXT_ID_640>(a_context));
-					return a_keyMask == keyMask;
-				}
-			}
-			else
+			if (a_deviceType == RE::INPUT_DEVICE::kKeyboard)
 			{
-				RE::ControlMap* controlMap = RE::ControlMap::GetSingleton();
-
-				if (a_deviceType == RE::INPUT_DEVICE::kKeyboard)
-				{
-					std::uint32_t keyMask = controlMap->GetMappedKey(a_controlName, RE::INPUT_DEVICE::kKeyboard, a_context);
-					return a_keyMask == keyMask;
-				}
-				else if (a_deviceType == RE::INPUT_DEVICE::kMouse)
-				{
-					std::uint32_t keyMask = controlMap->GetMappedKey(a_controlName, RE::INPUT_DEVICE::kMouse, a_context);
-					return a_keyMask == keyMask;
-				}
+				std::uint32_t keyMask = controlMap->GetMappedKey(a_controlName, RE::INPUT_DEVICE::kKeyboard, a_context);
+				return a_keyMask == keyMask;
 			}
+			else if (a_deviceType == RE::INPUT_DEVICE::kMouse)
+			{
+				std::uint32_t keyMask = controlMap->GetMappedKey(a_controlName, RE::INPUT_DEVICE::kMouse, a_context);
+				return a_keyMask == keyMask;
+			}
+
 			return false;
 		}
 
@@ -59,16 +42,8 @@ namespace DME
 
 			bool movementControlsEnabled;
 
-			if (REL::Module::get().version() >= SKSE::RUNTIME_SSE_1_6_1130)
-			{
-				RE::ControlMap* controlMap = RE::ControlMap::GetSingleton();
-				movementControlsEnabled = pc->movementHandler->IsInputEventHandlingEnabled() && controlMap->IsMovementControlsEnabled();
-			}
-			else
-			{
-				RE::ControlMap_640* controlMap = RE::ControlMap_640::GetSingleton();
-				movementControlsEnabled = pc->movementHandler->IsInputEventHandlingEnabled() && controlMap->IsMovementControlsEnabled();
-			}
+			RE::ControlMap* controlMap = RE::ControlMap::GetSingleton();
+			movementControlsEnabled = pc->movementHandler->IsInputEventHandlingEnabled() && controlMap->IsMovementControlsEnabled();
 
 			if (a_event && *a_event && !this->remapMode && !isInMenuMode && ui->IsMenuOpen(RE::DialogueMenu::MENU_NAME))
 			{
