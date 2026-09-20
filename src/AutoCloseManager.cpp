@@ -1,8 +1,6 @@
 #include "AutoCloseManager.h"
 #include "Settings.h"
 
-#include <cmath>
-
 namespace DME
 {
 	void AutoCloseManager::CheckAutoClose()

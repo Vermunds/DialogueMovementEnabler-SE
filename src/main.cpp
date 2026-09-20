@@ -1,6 +1,16 @@
 #include "Hooks.h"
+#include "ModConfigUI.h"
 #include "Settings.h"
-#include "version.h"
+
+#include "Version.h"
+
+static void MessageHandler(SKSE::MessagingInterface::Message* a_message)
+{
+	if (a_message->type == SKSE::MessagingInterface::kPostLoad)
+	{
+		DME::InstallModConfigUI();
+	}
+}
 
 extern "C"
 {
@@ -31,8 +41,21 @@ extern "C"
 		SKSE::log::info("{} v{} -({})", Version::FORMATTED_NAME, Version::STRING, __TIMESTAMP__);
 		SKSE::Init(a_skse, false);
 
+		const SKSE::MessagingInterface* messaging = SKSE::GetMessagingInterface();
+		if (messaging->RegisterListener("SKSE", MessageHandler))
+		{
+			SKSE::log::info("Messaging interface registration successful.");
+		}
+		else
+		{
+			SKSE::log::critical("Messaging interface registration failed.");
+			return false;
+		}
+
 		DME::LoadSettings();
 		SKSE::log::info("Settings loaded.");
+
+		SKSE::AllocTrampoline(1 << 5);
 
 		DME::InstallHooks();
 		SKSE::log::info("Hooks installed.");

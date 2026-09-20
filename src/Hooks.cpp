@@ -4,6 +4,19 @@
 
 namespace DME
 {
+	using GetDialogueLookAngle_t = float (*)(RE::PlayerCharacter*);
+	static REL::Relocation<GetDialogueLookAngle_t> _GetDialogueLookAngle;
+
+	static float GetDialogueLookAngle_Hook(RE::PlayerCharacter* a_player)
+	{
+		if (Settings::GetSingleton()->unlockCamera)
+		{
+			return std::numeric_limits<float>::max();
+		}
+
+		return _GetDialogueLookAngle(a_player);
+	}
+
 	class MenuControlsEx : public RE::MenuControls
 	{
 	public:
@@ -217,7 +230,7 @@ namespace DME
 
 	void InstallHooks()
 	{
-		Settings* settings = Settings::GetSingleton();
+		_GetDialogueLookAngle = SKSE::GetTrampoline().write_call<5>(REL::ID{ 42338 }.address() + 0x5A3, &GetDialogueLookAngle_Hook);
 
 		REL::Relocation<std::uintptr_t> vTable_mc(RE::VTABLE_MenuControls[0]);
 		MenuControlsEx::_ProcessEvent = vTable_mc.write_vfunc(0x1, &MenuControlsEx::ProcessEvent_Hook);
@@ -226,11 +239,5 @@ namespace DME
 		REL::Relocation<std::uintptr_t> vTable_dm(RE::VTABLE_DialogueMenu[0]);
 		DialogueMenuEx::_ProcessMessage = vTable_dm.write_vfunc(0x4, &DialogueMenuEx::ProcessMessage_Hook);
 		DialogueMenuEx::_AdvanceMovie = vTable_dm.write_vfunc(0x5, &DialogueMenuEx::AdvanceMovie_Hook);
-
-		if (settings->unlockCamera)
-		{
-			std::uint8_t buf[] = { 0xE9, 0xB1, 0x00, 0x00, 0x00, 0x90 };  //jmp + nop
-			REL::safe_write(REL::ID{ 42338 }.address() + 0x5AF, std::span<uint8_t>(buf));
-		}
 	}
 }

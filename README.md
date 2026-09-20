@@ -7,6 +7,9 @@ A mod for The Elder Scrolls V: Skyrim - Special Edition.
 
 With this mod you will be able to move around in dialogue menus. It also unlocks the camera rotation so you'll be able to look around in any direction. Dialogue menus will close automatically if you move too far away from the speaker.
 
+## Configuration
+The settings can be changed in-game, in the settings menu of either SKSE Menu Framework or F.U.C.K, or in the provided .ini file. Changes made in the menu are saved to the same .ini file.
+
 ## INI Configuration
 The configuration file is located at:
 
