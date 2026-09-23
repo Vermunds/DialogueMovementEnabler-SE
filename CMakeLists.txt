@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.31)
 # Setup project
 project(
 	DialogueMovementEnabler
-	VERSION 2.2.1
+	VERSION 2.3.0
 	LANGUAGES CXX
 )
 set(FORMATTED_NAME "Dialogue Movement Enabler")
