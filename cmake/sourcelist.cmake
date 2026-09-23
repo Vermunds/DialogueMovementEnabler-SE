@@ -4,7 +4,6 @@ set(SOURCES
 	include/ModConfigUI.h
 	include/PCH.h
 	include/Settings.h
-	include/version.h
 	src/AutoCloseManager.cpp
 	src/Hooks.cpp
 	src/ModConfigUI.cpp
