@@ -9,14 +9,14 @@ namespace
 	void IniSection(CSimpleIniA& a_ini, const char* a_section, const char* a_comment = nullptr)
 	{
 		a_ini.SetValue(a_section, nullptr, nullptr, a_comment);
-		SKSE::log::info("[{}]", a_section);
+		logger::info("[{}]", a_section);
 	}
 
 	bool IniGetBool(CSimpleIniA& a_ini, const char* a_section, const char* a_key, bool a_default, const char* a_comment = nullptr)
 	{
 		bool val = a_ini.GetBoolValue(a_section, a_key, a_default);
 		a_ini.SetBoolValue(a_section, a_key, val, a_comment, true);
-		SKSE::log::info("  {}: {}", a_key, val);
+		logger::info("  {}: {}", a_key, val);
 		return val;
 	}
 
@@ -24,7 +24,7 @@ namespace
 	{
 		float val = static_cast<float>(a_ini.GetDoubleValue(a_section, a_key, a_default));
 		a_ini.SetDoubleValue(a_section, a_key, val, a_comment, true);
-		SKSE::log::info("  {}: {}", a_key, val);
+		logger::info("  {}: {}", a_key, val);
 		return val;
 	}
 }
@@ -47,7 +47,7 @@ namespace DME
 		ini.SetUnicode();
 		ini.LoadFile(INI_PATH);
 
-		SKSE::log::info("Loading settings from: {}", std::filesystem::absolute(INI_PATH).string());
+		logger::info("Loading settings from: {}", std::filesystem::absolute(INI_PATH).string());
 
 		IniSection(ini, "GENERAL");
 		settings->unlockCamera = IniGetBool(ini, "GENERAL", "bUnlockCamera", UNLOCK_CAMERA_DEFAULT_VALUE, "#  Unlocks camera rotation so you can look around in any direction.");
@@ -85,7 +85,7 @@ namespace DME
 		settings->autoCloseDistance = IniGetFloat(ini, "AUTOCLOSE", "fAutoCloseDistance", AUTO_CLOSE_DISTANCE_DEFAULT_VALUE, "#  The maximum distance (in in-game units) before the menu will automatically close.\n#  Too small values can cause the menus to close immediately.");
 		settings->autoCloseTolerance = IniGetFloat(ini, "AUTOCLOSE", "fAutoCloseTolerance", AUTO_CLOSE_TOLERANCE_DEFAULT_VALUE, "#  The maximum distance (in in-game units) where the menu NEVER auto-closes (in relation to the players initial position when the menu was opened).\n#  This is used as a failsafe when the initial distance is larger than the maximum allowed to prevent the menu from closing immediately.");
 
-		SKSE::log::info("Settings loaded.");
+		logger::info("Settings loaded.");
 
 		ini.SaveFile(INI_PATH);
 	}
@@ -134,7 +134,7 @@ namespace DME
 
 		ini.SaveFile(INI_PATH);
 
-		SKSE::log::info("Settings saved.");
+		logger::info("Settings saved.");
 	}
 
 	void RestoreDefaults()

@@ -230,7 +230,7 @@ namespace DME
 
 	void InstallHooks()
 	{
-		_GetDialogueLookAngle = SKSE::GetTrampoline().write_call<5>(REL::ID{ 42338 }.address() + 0x5A3, &GetDialogueLookAngle_Hook);
+		_GetDialogueLookAngle = REL::GetTrampoline().write_call<5>(REL::ID{ 42338 }.address() + 0x450, &GetDialogueLookAngle_Hook);
 
 		REL::Relocation<std::uintptr_t> vTable_mc(RE::VTABLE_MenuControls[0]);
 		MenuControlsEx::_ProcessEvent = vTable_mc.write_vfunc(0x1, &MenuControlsEx::ProcessEvent_Hook);
