@@ -31,7 +31,7 @@ extern "C"
 		initInfo.logLevel = REX::ELogLevel::Trace;
 		initInfo.logPattern = "%s(%#): [%^%l%$] %v";
 		initInfo.trampoline = true;
-		initInfo.trampolineSize = 1 << 5;
+		initInfo.trampolineSize = 1 << 6;
 		SKSE::Init(a_skse, initInfo);
 
 		logger::info("{} v{} -({})", Version::FORMATTED_NAME, Version::STRING, __TIMESTAMP__);

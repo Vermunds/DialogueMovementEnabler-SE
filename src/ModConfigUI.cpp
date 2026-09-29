@@ -51,7 +51,30 @@ namespace DME
 
 		a_renderer.SeparatorText(Translate("$DME_Section_Camera"));
 
-		if (a_renderer.Checkbox(Translate("$DME_UnlockCamera"), &settings->unlockCamera, UNLOCK_CAMERA_DEFAULT_VALUE, Translate("$DME_UnlockCamera_Tooltip")))
+		// Free look implies an unlocked camera, the box shows it ticked without touching the stored value.
+		bool unlockCameraForced = true;
+		bool* unlockCamera = settings->freeLook ? &unlockCameraForced : &settings->unlockCamera;
+
+		a_renderer.BeginDisabled(settings->freeLook);
+		if (a_renderer.Checkbox(Translate("$DME_UnlockCamera"), unlockCamera, UNLOCK_CAMERA_DEFAULT_VALUE, Translate("$DME_UnlockCamera_Tooltip")))
+		{
+			SaveSettings();
+		}
+		a_renderer.EndDisabled();
+
+		if (a_renderer.Checkbox(Translate("$DME_FreeLook"), &settings->freeLook, FREE_LOOK_DEFAULT_VALUE, Translate("$DME_FreeLook_Tooltip")))
+		{
+			SaveSettings();
+		}
+
+		a_renderer.SeparatorText(Translate("$DME_Section_TurnToSpeaker"));
+
+		if (a_renderer.Checkbox(Translate("$DME_DisableTurnToSpeakerPlayerInitiated"), &settings->disableTurnToSpeakerPlayerInitiated, DISABLE_TURN_TO_SPEAKER_PLAYER_INITIATED_DEFAULT_VALUE, Translate("$DME_DisableTurnToSpeakerPlayerInitiated_Tooltip")))
+		{
+			SaveSettings();
+		}
+
+		if (a_renderer.Checkbox(Translate("$DME_DisableTurnToSpeakerNPCInitiated"), &settings->disableTurnToSpeakerNPCInitiated, DISABLE_TURN_TO_SPEAKER_NPC_INITIATED_DEFAULT_VALUE, Translate("$DME_DisableTurnToSpeakerNPCInitiated_Tooltip")))
 		{
 			SaveSettings();
 		}
