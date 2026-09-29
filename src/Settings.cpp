@@ -51,7 +51,7 @@ namespace DME
 
 		IniSection(ini, "GENERAL");
 		settings->unlockCamera = IniGetBool(ini, "GENERAL", "bUnlockCamera", UNLOCK_CAMERA_DEFAULT_VALUE, "#  Unlocks camera rotation so you can look around in any direction.");
-		settings->freeLook = IniGetBool(ini, "GENERAL", "bFreeLook", FREE_LOOK_DEFAULT_VALUE, "#  Turns the camera with the mouse instead of by moving the cursor to the edge of the screen.\n#  This setting implies bUnlockCamera is enabled.");
+		settings->freeLook = IniGetBool(ini, "GENERAL", "bFreeLook", FREE_LOOK_DEFAULT_VALUE, "#  Turns the camera with the mouse instead of by moving the cursor to the edge of the screen.\n#  You can use the scroll wheel to select options. Note that this may not work on every configuration.\n#  This setting implies bUnlockCamera is enabled.");
 		settings->disableTurnToSpeakerPlayerInitiated = IniGetBool(ini, "GENERAL", "bDisableTurnToSpeakerPlayerInitiated", DISABLE_TURN_TO_SPEAKER_PLAYER_INITIATED_DEFAULT_VALUE, "#  Stops the camera from turning to face the speaker when you start a conversation.");
 		settings->disableTurnToSpeakerNPCInitiated = IniGetBool(ini, "GENERAL", "bDisableTurnToSpeakerNPCInitiated", DISABLE_TURN_TO_SPEAKER_NPC_INITIATED_DEFAULT_VALUE, "#  Stops the camera from turning to face the speaker when an NPC starts a conversation with you.\n#  Not recommended, as you may not be able to tell who is talking to you.");
 
@@ -85,8 +85,8 @@ namespace DME
 
 		IniSection(ini, "AUTOCLOSE");
 		settings->autoCloseMenus = IniGetBool(ini, "AUTOCLOSE", "bAutoCloseMenus", AUTO_CLOSE_MENUS_DEFAULT_VALUE, "#  Enable or disable auto-closing of the dialogue menu if the distance to the speaker is too large.");
-		settings->autoCloseDistance = IniGetFloat(ini, "AUTOCLOSE", "fAutoCloseDistance", AUTO_CLOSE_DISTANCE_DEFAULT_VALUE, "#  The maximum distance (in in-game units) before the menu will automatically close.\n#  Too small values can cause the menus to close immediately.");
-		settings->autoCloseTolerance = IniGetFloat(ini, "AUTOCLOSE", "fAutoCloseTolerance", AUTO_CLOSE_TOLERANCE_DEFAULT_VALUE, "#  The maximum distance (in in-game units) where the menu NEVER auto-closes (in relation to the players initial position when the menu was opened).\n#  This is used as a failsafe when the initial distance is larger than the maximum allowed to prevent the menu from closing immediately.");
+		settings->autoCloseDistance = IniGetFloat(ini, "AUTOCLOSE", "fAutoCloseDistance", AUTO_CLOSE_DISTANCE_DEFAULT_VALUE, "#  The maximum distance (in in-game units) before the menu will automatically close.\n#  Too small values can cause the menus to close unexpectedly.");
+		settings->autoCloseTolerance = IniGetFloat(ini, "AUTOCLOSE", "fAutoCloseTolerance", AUTO_CLOSE_TOLERANCE_DEFAULT_VALUE, "#  The maximum distance (in in-game units) where the menu NEVER auto-closes (in relation to the players initial position when the menu was opened).\n#  This is used as a failsafe when the initial distance is larger than the maximum allowed to prevent the menu from closing unexpectedly.");
 
 		SKSE::log::info("Settings loaded.");
 
