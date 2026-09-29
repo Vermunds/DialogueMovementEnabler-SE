@@ -51,6 +51,7 @@ namespace DME
 
 		IniSection(ini, "GENERAL");
 		settings->unlockCamera = IniGetBool(ini, "GENERAL", "bUnlockCamera", UNLOCK_CAMERA_DEFAULT_VALUE, "#  Unlocks camera rotation so you can look around in any direction.");
+		settings->freeLook = IniGetBool(ini, "GENERAL", "bFreeLook", FREE_LOOK_DEFAULT_VALUE, "#  Disables cursor and allows you to look around with the mouse.");
 
 		IniSection(ini, "CONTROLS_KEYBOARD");
 		settings->allowMovement[ControlType::kKeyboardMouse] = IniGetBool(ini, "CONTROLS_KEYBOARD", "bAllowMovement", ALLOW_MOVEMENT_KEYBOARD_DEFAULT_VALUE);
@@ -101,6 +102,7 @@ namespace DME
 		ini.LoadFile(INI_PATH);
 
 		ini.SetBoolValue("GENERAL", "bUnlockCamera", settings->unlockCamera, nullptr, true);
+		ini.SetBoolValue("GENERAL", "bFreeLook", settings->freeLook, nullptr, true);
 
 		ini.SetBoolValue("CONTROLS_KEYBOARD", "bAllowMovement", settings->allowMovement[ControlType::kKeyboardMouse], nullptr, true);
 		ini.SetBoolValue("CONTROLS_KEYBOARD", "bAllowRun", settings->allowRun[ControlType::kKeyboardMouse], nullptr, true);
@@ -144,6 +146,7 @@ namespace DME
 		Settings* settings = Settings::GetSingleton();
 
 		settings->unlockCamera = UNLOCK_CAMERA_DEFAULT_VALUE;
+		settings->freeLook = FREE_LOOK_DEFAULT_VALUE;
 
 		settings->allowMovement[ControlType::kKeyboardMouse] = ALLOW_MOVEMENT_KEYBOARD_DEFAULT_VALUE;
 		settings->allowRun[ControlType::kKeyboardMouse] = ALLOW_RUN_KEYBOARD_DEFAULT_VALUE;

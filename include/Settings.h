@@ -4,6 +4,7 @@ namespace DME
 {
 	// General
 	constexpr bool UNLOCK_CAMERA_DEFAULT_VALUE = true;
+	constexpr bool FREE_LOOK_DEFAULT_VALUE = false;
 
 	// Controls (Keyboard)
 	constexpr bool ALLOW_MOVEMENT_KEYBOARD_DEFAULT_VALUE = true;
@@ -53,6 +54,7 @@ namespace DME
 
 		// General
 		bool unlockCamera;
+		bool freeLook;
 
 		// Controls
 		bool allowMovement[kTotal];

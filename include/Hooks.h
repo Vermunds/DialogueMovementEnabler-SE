@@ -3,4 +3,5 @@
 namespace DME
 {
 	void InstallHooks();
+	void UpdatePatches();
 }

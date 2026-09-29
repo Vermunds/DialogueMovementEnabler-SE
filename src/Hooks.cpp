@@ -17,6 +17,39 @@ namespace DME
 		return _GetDialogueLookAngle(a_player);
 	}
 
+	struct BytePatch
+	{
+		std::uintptr_t address = 0;
+		std::uint8_t original[6]{};
+		std::uint8_t patched[6]{};
+	};
+
+	static BytePatch s_freeLookPatch;
+
+	static void InitPatch(BytePatch& a_patch, std::uintptr_t a_address, const std::uint8_t (&a_bytes)[6])
+	{
+		a_patch.address = a_address;
+		std::memcpy(a_patch.original, reinterpret_cast<const void*>(a_address), sizeof(a_patch.original));
+		std::memcpy(a_patch.patched, a_bytes, sizeof(a_patch.patched));
+	}
+
+	static void WritePatch(const BytePatch& a_patch, bool a_enable)
+	{
+		REL::WriteSafe(reinterpret_cast<void*>(a_patch.address), a_enable ? a_patch.patched : a_patch.original, sizeof(a_patch.patched));
+	}
+
+	static void WritePatches()
+	{
+		Settings* settings = Settings::GetSingleton();
+		WritePatch(s_freeLookPatch, settings->freeLook);
+	}
+
+	void UpdatePatches()
+	{
+		// Run on the main thread, so the game isn't executing the bytes while they're being rewritten
+		SKSE::GetTaskInterface()->AddTask([]() { WritePatches(); });
+	}
+
 	class MenuControlsEx : public RE::MenuControls
 	{
 	public:
@@ -177,6 +210,11 @@ namespace DME
 			{
 			case RE::UI_MESSAGE_TYPE::kShow:
 				{
+					if (Settings::GetSingleton()->freeLook)
+					{
+						this->menuFlags.reset(Flag::kUsesCursor, Flag::kUpdateUsesCursor, Flag::kDontHideCursorWhenTopmost);
+					}
+
 					RE::MenuTopicManager* topicManager = RE::MenuTopicManager::GetSingleton();
 
 					RE::TESObjectREFR* target = nullptr;
@@ -231,6 +269,9 @@ namespace DME
 	void InstallHooks()
 	{
 		_GetDialogueLookAngle = REL::GetTrampoline().write_call<5>(REL::ID{ 42338 }.address() + 0x450, &GetDialogueLookAngle_Hook);
+
+		InitPatch(s_freeLookPatch, REL::ID{ 42338 }.address() + 0x351, { 0xE9, 0xE7, 0x00, 0x00, 0x00, 0x90 });  //jmp + nop
+		WritePatches();
 
 		REL::Relocation<std::uintptr_t> vTable_mc(RE::VTABLE_MenuControls[0]);
 		MenuControlsEx::_ProcessEvent = vTable_mc.write_vfunc(0x1, &MenuControlsEx::ProcessEvent_Hook);

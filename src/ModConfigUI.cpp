@@ -56,6 +56,12 @@ namespace DME
 			SaveSettings();
 		}
 
+		if (a_renderer.Checkbox(Translate("$DME_FreeLook"), &settings->freeLook, FREE_LOOK_DEFAULT_VALUE, Translate("$DME_FreeLook_Tooltip")))
+		{
+			UpdatePatches();
+			SaveSettings();
+		}
+
 		a_renderer.SeparatorText(Translate("$DME_Section_AutoClose"));
 
 		if (a_renderer.Checkbox(Translate("$DME_AutoCloseMenus"), &settings->autoCloseMenus, AUTO_CLOSE_MENUS_DEFAULT_VALUE, Translate("$DME_AutoCloseMenus_Tooltip")))
@@ -139,6 +145,12 @@ namespace DME
 		a_renderer.EndTable();
 	}
 
+	void RestoreDefaultsAndUpdatePatches()
+	{
+		RestoreDefaults();
+		UpdatePatches();
+	}
+
 	void InstallModConfigUI()
 	{
 		static constexpr ModConfigUI::ModInfo MOD_INFO{
@@ -156,6 +168,6 @@ namespace DME
 			{ "$DME_Page_Controls", &DrawControlsPage }
 		};
 
-		ModConfigUI::Install(MOD_INFO, PAGES, &RestoreDefaults);
+		ModConfigUI::Install(MOD_INFO, PAGES, &RestoreDefaultsAndUpdatePatches);
 	}
 }
