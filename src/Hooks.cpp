@@ -229,41 +229,36 @@ namespace DME
 
 					RE::MenuTopicManager* topicManager = RE::MenuTopicManager::GetSingleton();
 
-					RE::TESObjectREFR* target = nullptr;
-
-					if (topicManager->speaker && topicManager->speaker.get())
+					RE::TESObjectREFRPtr target = topicManager->speaker.get();
+					if (!target)
 					{
-						target = topicManager->speaker.get().get();
-					}
-					else if (topicManager->lastSpeaker && topicManager->lastSpeaker.get())
-					{
-						target = topicManager->lastSpeaker.get().get();
-					}
-					else
-					{
-						break;
+						target = topicManager->lastSpeaker.get();
 					}
 
-					RE::PlayerCharacter* player = RE::PlayerCharacter::GetSingleton();
+					bool sameWorldSpace = false;
 
-					if (player->GetParentCell()->IsInteriorCell() && target->GetParentCell()->IsInteriorCell())
+					if (target)
 					{
-						if (player->GetParentCell() == target->GetParentCell())
+						RE::PlayerCharacter* player = RE::PlayerCharacter::GetSingleton();
+						RE::TESObjectCELL* playerCell = player->GetParentCell();
+						RE::TESObjectCELL* targetCell = target->GetParentCell();
+
+						if (playerCell && targetCell)
 						{
-							AutoCloseManager::GetSingleton()->InitAutoClose(target);
+							if (playerCell->IsInteriorCell() && targetCell->IsInteriorCell())
+							{
+								sameWorldSpace = playerCell == targetCell;
+							}
+							else if (playerCell->IsExteriorCell() && targetCell->IsExteriorCell())
+							{
+								RE::TESWorldSpace* playerWorldspace = player->GetWorldspace();
+								RE::TESWorldSpace* targetWorldspace = target->GetWorldspace();
+								sameWorldSpace = playerWorldspace && targetWorldspace && playerWorldspace == targetWorldspace;
+							}
 						}
 					}
-					else if (player->GetParentCell()->IsExteriorCell() && target->GetParentCell()->IsExteriorCell())
-					{
-						if (player->GetWorldspace() == target->GetWorldspace())
-						{
-							AutoCloseManager::GetSingleton()->InitAutoClose(target);
-						}
-					}
-					else
-					{
-						AutoCloseManager::GetSingleton()->InitAutoClose(nullptr);
-					}
+
+					AutoCloseManager::GetSingleton()->InitAutoClose(sameWorldSpace ? target.get() : nullptr);
 				}
 				break;
 			}

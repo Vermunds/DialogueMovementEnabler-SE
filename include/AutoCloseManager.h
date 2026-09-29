@@ -18,12 +18,17 @@ namespace DME
 
 		struct AutoCloseData
 		{
-			RE::TESObjectREFR* target = nullptr;
+			RE::ObjectRefHandle target;
 			float initialDistance = 0.0f;
 			float minDistance = 0.0f;
+
+			void PrintDebugInfo() const;
 		};
 		AutoCloseData _data;
 
-		float GetDistance(RE::NiPoint3 a_playerPos, float a_playerHeight, RE::NiPoint3 a_refPos);
+		void CloseMenu(const std::string& a_reason);
+
+		static float GetBBDistance(const RE::TESObjectREFR* a_refA, const RE::TESObjectREFR* a_refB);
+		static std::string GetRefDebugString(const RE::TESObjectREFR* a_ref);
 	};
 }
