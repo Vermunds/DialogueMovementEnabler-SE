@@ -38,8 +38,8 @@ namespace DME
 
 	// Auto-close
 	constexpr bool AUTO_CLOSE_MENUS_DEFAULT_VALUE = true;
-	constexpr float AUTO_CLOSE_DISTANCE_DEFAULT_VALUE = 1350.f;
-	constexpr float AUTO_CLOSE_TOLERANCE_DEFAULT_VALUE = 400.f;
+	constexpr float AUTO_CLOSE_DISTANCE_DEFAULT_VALUE = 1200.f;
+	constexpr float AUTO_CLOSE_TOLERANCE_DEFAULT_VALUE = 300.f;
 
 	class Settings
 	{
