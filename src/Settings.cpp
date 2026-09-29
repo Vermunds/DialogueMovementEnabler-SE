@@ -51,6 +51,9 @@ namespace DME
 
 		IniSection(ini, "GENERAL");
 		settings->unlockCamera = IniGetBool(ini, "GENERAL", "bUnlockCamera", UNLOCK_CAMERA_DEFAULT_VALUE, "#  Unlocks camera rotation so you can look around in any direction.");
+		settings->freeLook = IniGetBool(ini, "GENERAL", "bFreeLook", FREE_LOOK_DEFAULT_VALUE, "#  Turns the camera with the mouse instead of by moving the cursor to the edge of the screen.\n#  This setting implies bUnlockCamera is enabled.");
+		settings->disableTurnToSpeakerPlayerInitiated = IniGetBool(ini, "GENERAL", "bDisableTurnToSpeakerPlayerInitiated", DISABLE_TURN_TO_SPEAKER_PLAYER_INITIATED_DEFAULT_VALUE, "#  Stops the camera from turning to face the speaker when you start a conversation.");
+		settings->disableTurnToSpeakerNPCInitiated = IniGetBool(ini, "GENERAL", "bDisableTurnToSpeakerNPCInitiated", DISABLE_TURN_TO_SPEAKER_NPC_INITIATED_DEFAULT_VALUE, "#  Stops the camera from turning to face the speaker when an NPC starts a conversation with you.\n#  Not recommended, as you may not be able to tell who is talking to you.");
 
 		IniSection(ini, "CONTROLS_KEYBOARD");
 		settings->allowMovement[ControlType::kKeyboardMouse] = IniGetBool(ini, "CONTROLS_KEYBOARD", "bAllowMovement", ALLOW_MOVEMENT_KEYBOARD_DEFAULT_VALUE);
@@ -101,6 +104,9 @@ namespace DME
 		ini.LoadFile(INI_PATH);
 
 		ini.SetBoolValue("GENERAL", "bUnlockCamera", settings->unlockCamera, nullptr, true);
+		ini.SetBoolValue("GENERAL", "bFreeLook", settings->freeLook, nullptr, true);
+		ini.SetBoolValue("GENERAL", "bDisableTurnToSpeakerPlayerInitiated", settings->disableTurnToSpeakerPlayerInitiated, nullptr, true);
+		ini.SetBoolValue("GENERAL", "bDisableTurnToSpeakerNPCInitiated", settings->disableTurnToSpeakerNPCInitiated, nullptr, true);
 
 		ini.SetBoolValue("CONTROLS_KEYBOARD", "bAllowMovement", settings->allowMovement[ControlType::kKeyboardMouse], nullptr, true);
 		ini.SetBoolValue("CONTROLS_KEYBOARD", "bAllowRun", settings->allowRun[ControlType::kKeyboardMouse], nullptr, true);
@@ -144,6 +150,9 @@ namespace DME
 		Settings* settings = Settings::GetSingleton();
 
 		settings->unlockCamera = UNLOCK_CAMERA_DEFAULT_VALUE;
+		settings->freeLook = FREE_LOOK_DEFAULT_VALUE;
+		settings->disableTurnToSpeakerPlayerInitiated = DISABLE_TURN_TO_SPEAKER_PLAYER_INITIATED_DEFAULT_VALUE;
+		settings->disableTurnToSpeakerNPCInitiated = DISABLE_TURN_TO_SPEAKER_NPC_INITIATED_DEFAULT_VALUE;
 
 		settings->allowMovement[ControlType::kKeyboardMouse] = ALLOW_MOVEMENT_KEYBOARD_DEFAULT_VALUE;
 		settings->allowRun[ControlType::kKeyboardMouse] = ALLOW_RUN_KEYBOARD_DEFAULT_VALUE;

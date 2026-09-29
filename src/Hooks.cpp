@@ -7,14 +7,58 @@ namespace DME
 	using GetDialogueLookAngle_t = float (*)(RE::PlayerCharacter*);
 	static REL::Relocation<GetDialogueLookAngle_t> _GetDialogueLookAngle;
 
+	using InitDialogueLookAt_t = void (*)(RE::PlayerCharacter*);
+	static REL::Relocation<InitDialogueLookAt_t> _InitDialogueLookAt;
+
+	using IsGamepadEnabled_t = bool (*)(RE::BSInputDeviceManager*);
+	static REL::Relocation<IsGamepadEnabled_t> _IsGamepadEnabled;
+
+	using StartDialogue_t = bool (*)(RE::MenuTopicManager*, RE::TESObjectREFR*, bool, RE::TESTopicInfo*, bool);
+	static REL::Relocation<StartDialogue_t> _StartDialogue;
+
+	static bool s_isNPCInitiatedDialogue = false;
+
 	static float GetDialogueLookAngle_Hook(RE::PlayerCharacter* a_player)
 	{
-		if (Settings::GetSingleton()->unlockCamera)
+		Settings* settings = Settings::GetSingleton();
+
+		if (settings->unlockCamera || settings->freeLook)
 		{
 			return std::numeric_limits<float>::max();
 		}
 
 		return _GetDialogueLookAngle(a_player);
+	}
+
+	static bool Actor_SetDialogueWithPlayer_ForceGreet_Hook(RE::MenuTopicManager* a_topicManager, RE::TESObjectREFR* a_speaker, bool a_unk1, RE::TESTopicInfo* a_topicInfo, bool a_unk2)
+	{
+		s_isNPCInitiatedDialogue = true;
+		bool result = _StartDialogue(a_topicManager, a_speaker, a_unk1, a_topicInfo, a_unk2);  // InitDialogueLookAt_Hook is called from here
+		s_isNPCInitiatedDialogue = false;
+		return result;
+	}
+
+	static void InitDialogueLookAt_Hook(RE::PlayerCharacter* a_player)
+	{
+		Settings* settings = Settings::GetSingleton();
+
+		if (s_isNPCInitiatedDialogue ? settings->disableTurnToSpeakerNPCInitiated : settings->disableTurnToSpeakerPlayerInitiated)
+		{
+			return;
+		}
+
+		_InitDialogueLookAt(a_player);
+	}
+
+	static bool PlayerControls_MenuOpenCloseEvent_Handle_Hook(RE::BSInputDeviceManager* a_inputDeviceManager)
+	{
+		// Decides whether the cursor turns the camera at the screen edges while the dialogue menu is open, which the game only does without a gamepad
+		if (Settings::GetSingleton()->freeLook)
+		{
+			return true;
+		}
+
+		return _IsGamepadEnabled(a_inputDeviceManager);
 	}
 
 	class MenuControlsEx : public RE::MenuControls
@@ -177,6 +221,12 @@ namespace DME
 			{
 			case RE::UI_MESSAGE_TYPE::kShow:
 				{
+					// Disable cursor when we're in free look
+					if (Settings::GetSingleton()->freeLook)
+					{
+						this->menuFlags.reset(RE::IMenu::Flag::kUsesCursor, RE::IMenu::Flag::kUpdateUsesCursor, RE::IMenu::Flag::kDontHideCursorWhenTopmost);
+					}
+
 					RE::MenuTopicManager* topicManager = RE::MenuTopicManager::GetSingleton();
 
 					RE::TESObjectREFR* target = nullptr;
@@ -230,12 +280,16 @@ namespace DME
 
 	void InstallHooks()
 	{
-		_GetDialogueLookAngle = SKSE::GetTrampoline().write_call<5>(REL::ID{ 42338 }.address() + 0x5A3, &GetDialogueLookAngle_Hook);
+		SKSE::Trampoline& trampoline = SKSE::GetTrampoline();
+
+		_GetDialogueLookAngle = trampoline.write_call<5>(REL::ID{ 42338 }.address() + 0x5A3, &GetDialogueLookAngle_Hook);
+		_StartDialogue = trampoline.write_call<5>(REL::ID{ 37200 }.address() + 0x23D, &Actor_SetDialogueWithPlayer_ForceGreet_Hook);
+		_InitDialogueLookAt = trampoline.write_call<5>(REL::ID{ 35282 }.address() + 0x6B4, &InitDialogueLookAt_Hook);
+		_IsGamepadEnabled = trampoline.write_call<5>(REL::ID{ 42339 }.address() + 0x46, &PlayerControls_MenuOpenCloseEvent_Handle_Hook);
 
 		REL::Relocation<std::uintptr_t> vTable_mc(RE::VTABLE_MenuControls[0]);
 		MenuControlsEx::_ProcessEvent = vTable_mc.write_vfunc(0x1, &MenuControlsEx::ProcessEvent_Hook);
 
-		//Hook ProcessMessage
 		REL::Relocation<std::uintptr_t> vTable_dm(RE::VTABLE_DialogueMenu[0]);
 		DialogueMenuEx::_ProcessMessage = vTable_dm.write_vfunc(0x4, &DialogueMenuEx::ProcessMessage_Hook);
 		DialogueMenuEx::_AdvanceMovie = vTable_dm.write_vfunc(0x5, &DialogueMenuEx::AdvanceMovie_Hook);

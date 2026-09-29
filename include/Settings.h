@@ -4,6 +4,9 @@ namespace DME
 {
 	// General
 	constexpr bool UNLOCK_CAMERA_DEFAULT_VALUE = true;
+	constexpr bool FREE_LOOK_DEFAULT_VALUE = false;
+	constexpr bool DISABLE_TURN_TO_SPEAKER_PLAYER_INITIATED_DEFAULT_VALUE = false;
+	constexpr bool DISABLE_TURN_TO_SPEAKER_NPC_INITIATED_DEFAULT_VALUE = false;
 
 	// Controls (Keyboard)
 	constexpr bool ALLOW_MOVEMENT_KEYBOARD_DEFAULT_VALUE = true;
@@ -53,6 +56,9 @@ namespace DME
 
 		// General
 		bool unlockCamera;
+		bool freeLook;  // Implies unlockCamera
+		bool disableTurnToSpeakerPlayerInitiated;
+		bool disableTurnToSpeakerNPCInitiated;
 
 		// Controls
 		bool allowMovement[kTotal];

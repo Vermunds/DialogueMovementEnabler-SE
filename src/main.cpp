@@ -55,7 +55,7 @@ extern "C"
 		DME::LoadSettings();
 		SKSE::log::info("Settings loaded.");
 
-		SKSE::AllocTrampoline(1 << 5);
+		SKSE::AllocTrampoline(1 << 6);
 
 		DME::InstallHooks();
 		SKSE::log::info("Hooks installed.");
